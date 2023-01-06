@@ -10,25 +10,25 @@
 #define WIFI ESP32_ACT_AS_STATION              // select between NO_WIFI, ESP32_ACT_AS_STATION, ESP32_ACT_AS_AP 
 
 // If wifi is used, set the parameter to identify the access point (= the router when ESP32_ACT_AS_STATION or the ESP32 when ESP32_ACT_AS_AP)
-#define MY_SSID "bbox2-58c4"       // replace by the name of your access point (when act as station) or the name you assign to your device (when act as acces point)
+#define MY_SSID "Mbr-919ns5"       // replace by the name of your access point (when act as station) or the name you assign to your device (when act as acces point)
 
 // for ESP32_ACT_AS_STATION , set the password to get access to your access point (router)
 // for ESP_ACT_AS_AP, set the password you want to use to protect your ESP32 ( can be empty)
-#define MY_PASSWORD "your password" // replace by your password 
+#define MY_PASSWORD "Brightstar132" // replace by your password 
 
 // if you use Wifi, you can (optional) define a fix IP address. Then you have to define 3 parameters
 // If one of next 3 parameters is "", it means that you do not want to use a fix local IP address.
 //#define LOCAL_IP ""   // fix IP address
-#define LOCAL_IP "192.168.1.10"   // fix IP address
-#define SUBNET "255.255.255.0"    // subnet mask of your local network
-#define GATEWAY "192.168.1.1"     // gateway that have to check the IP address
+#define LOCAL_IP "192.168.0.212"   // fix IP address
+#define SUBNET "255.255.240.0"    // subnet mask of your local network
+#define GATEWAY "192.168.0.1"     // gateway that have to check the IP address
 
 // if you use GRBL_ESP32 board, you can connect to this board with Serial, telnet and/or Bluetooth
 // to connect via telnet to GRBL_ESP32 board, you have to define here the IP adress of the GRBL_ESP32 board
-#define GRBL_TELNET_IP "192.168.1.11" // IP address of GRBL_ESP32 telnet server  (as defined in GRBL_ESP32)
+#define GRBL_TELNET_IP "192.168.0.120" // IP address of GRBL_ESP32 telnet server  (as defined in GRBL_ESP32)
 
 // to connect via Bluetooth, you have to define the Bluetooth name of the GRBL_ESP32 board
-#define GRBL_BT_NAME "btgrblesp"   // name of GRBL_ESP32 bluetooth device (as defined in GRBL_ESP32)
+#define GRBL_BT_NAME "cnc_esp32_grbl"   // name of GRBL_ESP32 bluetooth device (as defined in GRBL_ESP32)
 
 
 // select your language between EN, FR, DE

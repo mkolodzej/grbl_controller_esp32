@@ -1,16 +1,15 @@
 {
+    "version": 4,
     "configurations": [
         {
             "name": "Win32",
+            "intelliSenseMode": "msvc-x64",
             "includePath": [
-                "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\**",
-                "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
-                "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.5.0-beta2\\**",
-                "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.4\\**"
+                "C:\\Users\\mattk.DESKTOP-P0D225Q\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\**",
+                "C:\\Users\\mattk.DESKTOP-P0D225Q\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.6\\**"
             ],
-            "forcedInclude": [],
-            "intelliSenseMode": "msvc-x64"
+            "forcedInclude": [
+            ]
         }
-    ],
-    "version": 4
+    ]
 }

@@ -1,7 +1,7 @@
 {
-    "board": "esp32:esp32:lolin32",
-    "configuration": "FlashFreq=80,PartitionScheme=default,UploadSpeed=921600",
+    "board": "esp32:esp32:d1_mini32",
+    "configuration": "FlashFreq=80,PartitionScheme=default,CPUFreq=240,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
     "output": "../build",
-    "port": "COM8",
-    "sketch": "grbl_controller_esp32.ino"
+    "port": "COM5",
+    "sketch": "grbl_controller_esp32\\grbl_controller_esp32.ino"
 }

@@ -1,35 +1,35 @@
-// compilé dans mon cas avec la board WEMOS LOLIN32
 
-// attention: pour recevoir tous les caractères envoyés par GRBL en réponse à $$, il faut augmenter la taille du buffer des Serial
-// pour cela, on peut employer une fonction prévue Serial2.setRxBufferSize(size_t)
+
+
+
 
 // to do
 
-// permettre l'accès au contenu du fichier SD seulement si le statut est print from SD en pause. 
+// allow access to SD file content only if status is print from SD paused.
 
-// prévoir de pouvoir faire un "continue" quand on a une pause alors que l'on est en train d'envoyer des CMD ou des STRING vers GRBL 
-// sans doute autoriser des déplacements en jog (avec la nunchuk notamment) si le statut est en HOLD ou en DOOR? (actuellement seul les statuts Jog et Idle sont autorisés pour la nunchuk
-// déplacer les tests relatifs à la place restant dans le serial2 bufferwrite dans la fonction qui regroupe les transmissions à grbl - voir plusieurs fois (Serial2.availableForWrite() != 0x7F ) 
-// afficher un message sur le tft si la liaison telnet ou BT vers grbl est demandée mais ne s'active pas
-// afficher un message sur le tft si la liaison telnet ou BT vers grbl est demandée mais est perdue (? comment détecter une liaison telnet perdue?)
-// quel statut appliquer pendant l'exécution d'un print via sd grbl? Quel blocage implémenter. Commennt reconnaître la fin. Voir si le % donné dans la ligne de statut est valable 
-// ajouter des libellés de code d'erreur dans langage. Attention: il y a plus d'erreur et pas mal de trous. Il faut peut être changer le système par exemple en les stockant dans preference.
-// voir les modifs faites par bradley pour éviter certains warnings; voir ce qu'il a fait pour éviter la perte du telnet au démarrage suite au reset
-// fusionner telnet et Bt dans un seul fichier pour réduire le nombre de tab
-// bouger le caracère telnet dans l'écran COM et y dire s'il a wifi ou pas: Wifi mode: None, STA , AP ; Wifi connected/Wifi not connected
-// vérifier que les messages de grbl sont stockés dans LastgrblMsg et non dans Msg.
-// mesurer le delai entre le send d'une commande et le OK (via telnet cela semble aller, à voir via serial)
-// vérifier si le soft reset provoque la perte de la liaison bluetooth ou telnet (car comment canceler un job lancer de GRBL SD card sinon); changer fCancel dans le tab actions
-// pourquoi avoir parfois des messages "error 120"
-// afficher le nom du fichier en cas d'usinage via la carte GRBL SD
-// le move au clavier ne marche pas toujours : grbl retourne une erreur 8 
-// avec l'impression via grbl SD, quand on fait pause, l'écran doit être adapté (ne pas montrer l'icone show gcode) et certaines fonctions aussi (sans doute Cancel et Resume)
-// durant l'impression, afficher le nbr de min depuis le début (ne pas compter quand c'est en pause.
-// pouquoi ne peut-on pas faire un move qaund on est en pause (l'icone est présente mais semble ne pas focntionner)
-// quand le PC est relié via serial à la carte grbl, il semble que les commandes $$ du pc ne passent pas.(alors que le pc recôit bien les répônses au ? envoyé par le TFT
-// vérifier si le pause provoque l'arrêt du moteur (d'après la doc grbl ce n'est pas le cas; peut être cela a t'il été ajouté dans la version STM32)
+// plan to be able to do a "continue" when you have a break while sending CMDs or STRINGs to GRBL
+// no doubt authorize movements in jog (with the nunchuk in particular) if the status is in HOLD or in DOOR? (currently only Jog and Idle statuses are allowed for nunchuk
+// move the tests relating to the place remaining in the serial2 bufferwrite in the function which groups the transmissions to grbl - see several times (Serial2.availableForWrite() != 0x7F )
+// display a message on the tft if the telnet or BT link to grbl is requested but does not activate
+// display a message on the tft if the telnet or BT link to grbl is requested but is lost (? how to detect a lost telnet link?)
+// which status to apply while executing a print via sd grbl? Which blocking to implement. How to recognize the end. See if the % given in the status line is valid
+// add error code labels in language. Warning: there are more errors and a lot of holes. It may be necessary to change the system, for example by storing them in preference.
+// see the modifications made by bradley to avoid certain warnings; see what he did to avoid the loss of telnet at startup following the reset
+// merge telnet and Bt in a single file to reduce the number of tabs
+// move the telnet character in the COM screen and say there if it has wifi or not: Wifi mode: None, STA , AP; Wifi connected/Wifi not connected
+// check that messages from grbl are stored in LastgrblMsg and not in Msg.
+// measure the delay between the sending of a command and the OK (via telnet it seems to be ok, to see via serial)
+// check if the soft reset causes the loss of the bluetooth or telnet connection (because how to cancel a job launch from GRBL SD card otherwise); change fCancel in the actions tab
+// why sometimes get "error 120" messages
+// display the file name if machining via the GRBL SD card
+// the keyboard move does not always work: grbl returns an error 8
+// with printing via grbl SD, when you pause, the screen must be adapted (not showing the show gcode icon) and some functions too (probably Cancel and Resume)
+// during printing, display the nbr of min since the beginning (do not count when it is paused.
+// why can't we make a move when we are paused (the icon is present but does not seem to work)
+// when the PC is connected via serial to the grbl card, it seems that the $$ commands from the pc do not pass. (while the pc does receive the responses to the ? sent by the TFT
+// check if the pause causes the motor to stop (according to the grbl doc this is not the case; maybe this was added in the STM32 version)
 /*
-Gestion r-cnc avec touch screen et esp32 avec carte sd.
+R-cnc management with touch screen and esp32 with sd card.
 
 - si pas fait récemment, voir si une touche est enfoncée
 - si une touche est enfoncée, met à jour le menu à afficher
@@ -40,34 +40,34 @@ Gestion r-cnc avec touch screen et esp32 avec carte sd.
 
 
 
-Taches
-- examiner si l'écran est pressé, si oui, envoyer un message à la tache qui traite l'écran
-- afficher l'écran choisi
-- envoyer et recevoir de grbl
+Tasks
+- examine if the screen is pressed, if yes, send a message to the task which processes the screen
+- display the selected screen
+- send and receive from grbl
 */
 
 
 /*
- Structure du programme pour un controller GRBL sur ESP32
-Utilise un écran avec touch screen et SD card
-L'écran fait 320 X 240
-Utilise un esp32 avec prise usb
-Prévoir l'utilisation d'un nunchuck (I2C)
-Prévoir la réception de fichier sur la SD card par wifi
+  Program structure for a GRBL controller on ESP32
+Uses a screen with touch screen and SD card
+The screen is 320 X 240
+Use an esp32 with usb socket
+Provide for the use of a nunchuck (I2C)
+Provide file reception on the SD card by wifi
 
-Sur l'écran de base, prévoir l'affichage des infos
-//   Info screen 
-//            USB->Grbl                  Idle                (or Run, Alarm, ... grbl status)  
-//                                                 So, printing status (blanco, ,SD-->Grbl  xxx%, USB<-->Grbl , Pause,  Cmd)  = printing status
-//                                                 and GRBL status (or Run, Alarm, ... grbl status)
-//            Last message                  (ex : card inserted, card removed, card error, Error: 2 ; 
-//            T                                   T = telnet connected or # = telnet not connected
-//              Wpos          Mpos
-//            X xxxxxpos      xxxxxpos                 
-//            Y yyyyypos      yyyyypos       
-//            Z zzzzzpos      zzzzzpos  
-//            F 100           S 10000 
- */
+On the basic screen, provide for the display of information
+// Screen Info
+// USB->Grbl Idle (or Run, Alarm, ... grbl status)
+// So, printing status (blanco, ,SD-->Grbl xxx%, USB<-->Grbl , Pause, Cmd) = printing status
+// and GRBL status (or Run, Alarm, ... grbl status)
+// Last message (ex: card inserted, card removed, card error, Error: 2;
+// T T = telnet connected or # = telnet not connected
+// Wpos Mpos
+// X xxxxxpos xxxxxpos
+// Y yyyyypos yyyyypos
+// Z zzzzzpos zzzzzpos
+// F 100 S 10000
+  */
 #include "config.h"
 #include "TFT_eSPI_ms/TFT_eSPI.cpp"   // setup file has to be edited for some parameters like screen device, pins
 #include "language.h"
@@ -129,6 +129,7 @@ char fileNames[MAX_FILES][23] ; // 22 car per line + "\0"; utilisé dans la cons
 //File fileToRead ; // file being printed
 //File workDirParents[DIR_LEVEL_MAX] ;
 //File aDir[DIR_LEVEL_MAX] ;
+
 SdFat32 sd;
 SdBaseFile aDir[DIR_LEVEL_MAX] ; 
 //SdBaseFile fileToRead ; // file being printed
